@@ -2,7 +2,7 @@ class Utente:
     def __init__(self):
         self.nome_loggato = None
         self.password_loggata = None
-        
+
 class Admin(Utente):
     def init(self,nome_loggato):
         self.nome_loggato=nome_loggato
