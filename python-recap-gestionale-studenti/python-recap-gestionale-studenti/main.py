@@ -12,6 +12,14 @@ class Utente:
             file.write(password + "\n")
         print("Registrazione completata!")
 
+    def modifica(self):
+        nome_da_modificare = input('inserire nome da modificare: ')
+        corso_da_modificare = input('inserire corso da modificare: ')
+        with open("studenti.csv", "a") as file:
+            riga = nome_da_modificare + ',' + corso_da_modificare + '\n'
+            file.write(riga)
+            print(riga, 'modificato con successo')
+
     # PUNTO 1: Login che salva il nome nell'oggetto
     def login(self):
         nome_login = input("Inserisci il tuo nome utente: ")
@@ -60,21 +68,26 @@ class Utente:
 
             
 class Admin(Utente):
-    def init(self,nome_loggato):
-        self.nome_loggato=nome_loggato
-        super().init()
+    def __init__(self): # Corretto: rimosso argomento obbligatorio e messi doppi underscore
+        super().__init__() 
+        
     def reset(self):
-        with open("studenti.txt", "w") as file:
-            file.write("") #sovrascrive con il vuoto
-    def intervento_utente():
-        motivazione=input('inserire motivazione reset')
+        with open("studenti.csv", "w") as file: # Coerente con .csv
+            file.write("") # sovrascrive con il vuoto
+        print("Reset eseguito.")
+
+    def intervento_utente(self): # Aggiunto self
+        motivazione = input('inserire motivazione reset: ')
         with open("sintervento_utente.txt", "w") as file:
             file.write(motivazione)
+        print("Motivazione salvata.")
+
 # ESECUZIONE DEL PROGRAMMA (Il Main richiama solo la classe)
 
 def main():
     # Creiamo un'unica istanza (oggetto) della classe Utente
     sistema = Utente()
+    admin = Admin() # Ora non darà più errore
 
     while True:
         print("\n--- BENVENUTO ---")
@@ -87,23 +100,39 @@ def main():
             sistema.registrazione()
 
         elif scelta == "2":
-            if sistema.login():
-                print(f"\nLogin OK! Benvenuto {sistema.nome_loggato}.")
-                
-                # PUNTO 4: Sotto-menu operativo
-                while True:
-                    print(f"\n--- AREA RISERVATA ({sistema.nome_loggato}) ---")
-                    print("1. Aggiungi studente (Giovanni)")
-                    print("2. Stampa aula ordinata (Mariagrazia)")
-                    print("3. Logout")
-                    scelta_interna = input("Scegli: ")
+            x = input("vuoi fare login come utente o come admin: ")
+            if x == "utente":
+                if sistema.login():
+                    print(f"\nLogin OK! Benvenuto {sistema.nome_loggato}.")
+                    
+                    # PUNTO 4: Sotto-menu operativo
+                    while True:
+                        print(f"\n--- AREA RISERVATA ({sistema.nome_loggato}) ---")
+                        print("1. Aggiungi studente")
+                        print("2. Modifica Studente")
+                        print("3. Stampa aula ordinata")
+                        print("4. Logout")
+                        scelta_interna = input("Scegli: ")
 
-                    if scelta_interna == "1":
-                        sistema.inserisci_studente()
-                    elif scelta_interna == "2":
-                        sistema.ordina_e_stampa()
-                    elif scelta_interna == "3":
-                        break
+                        if scelta_interna == "1":
+                            sistema.inserisci_studente()
+                        elif scelta_interna == "2":
+                            sistema.modifica()
+                        elif scelta_interna == "3":
+                            sistema.ordina_e_stampa()
+                        elif scelta_interna == "4":
+                            break
+                else:
+                    print("Login fallito.")
+
+            elif x == "admin":
+                y = input("vuoi resettare? Si / No: ") # Aggiunto input()
+                if y == "Si": 
+                    if admin.login(): # Richiede login admin prima di resettare
+                        admin.reset()
+                        admin.intervento_utente() 
+                else:
+                    print("Operazione annullata.")
             else:
                 print("Accesso negato.")
 
