@@ -1,95 +1,102 @@
-def registrazione():
-    #PUNTO 2: L'utente inserisce i dati per crearsi un account
-    nome = input("Scegli un nome utente: ")
-    password = input("Scegli una password: ")
-    
-    # PUNTO 3: I dati vengono salvati nel file (uno per riga)
-    with open("credenziali.txt", "a") as file:
-        file.write(nome + "\n")
-        file.write(password + "\n")
-    print("Registrazione completata!")
+# --- DEFINIZIONE DELLA CLASSE ---
 
-def login():
-    # PUNTO 1 L'utente inserisce i dati per entrare
-    nome_login = input("Inserisci il tuo nome utente: ")
-    pass_login = input("Inserisci la tua password: ")
-    
-    with open("credenziali.txt", "r") as file:
-        righe = file.readlines()
-        for i in range(0, len(righe), 2):
-            # Controllo sicurezza: verifica che ci siano abbastanza righe nel file
-            if i + 1 < len(righe):
-                user_salvato = righe[i].strip()
-                pass_salvato = righe[i+1].strip()
-                if user_salvato == nome_login and pass_salvato == pass_login:
-                    return True
-    return False
+class Utente:
+    def __init__(self):
+        self.nome_loggato = None
 
-def ins_mod_studenti():
-    #PUNTO 5: Una volta dentro,  gestisce il file degli studenti
-    print("\n--- GESTIONE STUDENTI ---")
-    print("1. Aggiungi studente")
-    print("2. Modifica (Sovrascrivi)")
-    scelta = input("Scegli: ")
-    
-    if scelta == "1":
-        nome = input("Nome studente: ")
-        corso = input("CORSO: ")
+    # PUNTO 2 e 3: Registrazione gestita dalla classe
+    def registrazione(self):
+        nome = input("Scegli un nome utente: ")
+        password = input("Scegli una password: ")
+        with open("credenziali.txt", "a") as file:
+            file.write(nome + "\n")
+            file.write(password + "\n")
+        print("Registrazione completata!")
+
+    # PUNTO 1: Login che salva il nome nell'oggetto
+    def login(self):
+        nome_login = input("Inserisci il tuo nome utente: ")
+        pass_login = input("Inserisci la tua password: ")
+        try:
+            with open("credenziali.txt", "r") as file:
+                righe = file.readlines()
+                for i in range(0, len(righe), 2):
+                    if i + 1 < len(righe):
+                        user_salvato = righe[i].strip()
+                        pass_salvato = righe[i+1].strip()
+                        if user_salvato == nome_login and pass_salvato == pass_login:
+                            self.nome_loggato = user_salvato
+                            return True
+        except FileNotFoundError:
+            print("Errore: Nessun database utenti trovato.")
+        return False
+
+    # PUNTO 5: Gestione Studenti (Inserimento)
+    def inserisci_studente(self):
+        nome = input('Nome studente: ')
+        corso = input('Corso: ')
         with open("studenti.csv", "a") as file:
             file.write(nome + "," + corso + "\n")
-        print("Studente aggiunto con successo!")
-    
-    elif scelta == "2":
-        nome = input("Nuovo nome: ")
-        corso = input("Nuovo corso: ")
-        with open("studenti.csv", "w") as file:
-            file.write(nome + "," + corso + "\n")
-        print("Lista aggiornata (Punto 5 completato)!")
+        print(f"Studente {nome} aggiunto!")
 
-# --- ESECUZIONE DEL PROGRAMMA ---
+    # PUNTO 6: Lettura e Ordinamento (Mariagrazia)
+    def ordina_e_stampa(self):
+        try:
+            with open("studenti.csv", "r") as file:
+                righe = file.readlines()
+            
+            if not righe:
+                print("L'aula è vuota.")
+                return
+
+            studenti = [r.strip().split(",") for r in righe]
+            studenti.sort(key=lambda x: x[1]) # Ordina per corso
+
+            print("\n--- ELENCO AULA ORDINATO ---")
+            for s in studenti:
+                print(f"Studente: {s[0]} | Corso: {s[1]}")
+        except FileNotFoundError:
+            print("File studenti non trovato.")
+
+# --- ESECUZIONE DEL PROGRAMMA (Il Main richiama solo la classe) ---
 
 def main():
-    #PUNTO 1  Il sistema che continua a girare finché non esci
+    # Creiamo un'unica istanza (oggetto) della classe Utente
+    sistema = Utente()
+
     while True:
         print("\n--- BENVENUTO ---")
         print("1. Registrati")
         print("2. Login")
         print("3. Esci")
         scelta = input("Cosa vuoi fare? ")
-        
+
         if scelta == "1":
-            registrazione()
-            
+            sistema.registrazione()
+
         elif scelta == "2":
-            if login():
-                print("\nLogin OK! Benvenuto nel sistema.")
+            if sistema.login():
+                print(f"\nLogin OK! Benvenuto {sistema.nome_loggato}.")
                 
-                
-                # QUI INIZIA IL PUNTO 4: Menu per utente loggato       
-                '''---------------------------------------------'''
-                 
+                # PUNTO 4: Sotto-menu operativo
                 while True:
-                    print("\n--- AREA RISERVATA (Punto 4) ---")
-                    print("1. Inserisci o Modifica studenti (Task Giovanni)")
-                    print("2. Stampa l'aula ordinata (Task Mariagrazia)")
+                    print(f"\n--- AREA RISERVATA ({sistema.nome_loggato}) ---")
+                    print("1. Aggiungi studente (Giovanni)")
+                    print("2. Stampa aula ordinata (Mariagrazia)")
                     print("3. Logout")
-                    scelta_interna = input("Scegli un'opzione: ")
-                    
+                    scelta_interna = input("Scegli: ")
+
                     if scelta_interna == "1":
-                        ins_mod_studenti() # Richiama il tuo PUNTO 5
-                        
+                        sistema.inserisci_studente()
                     elif scelta_interna == "2":
-                        # Qui Mariagrazia collegherà il suo PUNTO 6
-                        print("Funzione Stampa Aula di Mariagrazia in caricamento...")
-                        
+                        sistema.ordina_e_stampa()
                     elif scelta_interna == "3":
-                        print("Ritorno al menu principale...")
-                        break # Esce dal Punto 4 e torna al menu di Benvenuto
+                        break
             else:
-                print("Credenziali non valide.")
-                
+                print("Accesso negato.")
+
         elif scelta == "3":
-            print("Arrivederci!")
             break
 
-main()
+if __name__ == "__main__":
+    main()
