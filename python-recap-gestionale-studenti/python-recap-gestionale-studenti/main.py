@@ -2,6 +2,18 @@ class Utente:
     def __init__(self):
         self.nome_loggato = None
         self.password_loggata = None
+        
+class Admin(Utente):
+    def init(self,nome_loggato):
+        self.nome_loggato=nome_loggato
+        super().init()
+    def reset(self):
+        with open("studenti.txt", "w") as file:
+            file.write("") #sovrascrive con il vuoto
+    def intervento_utente():
+        motivazione=input('inserire motivazione reset')
+        with open("sintervento_utente.txt", "w") as file:
+            file.write(motivazione)
 
     # PUNTO 2 e 3: Registrazione gestita dalla classe
     def registrazione(self):
@@ -13,7 +25,7 @@ class Utente:
         print("Registrazione completata!")
 
     # PUNTO 1: Login che salva il nome nell'oggetto
-def login(self):
+    def login(self):
         nome_login = input("Inserisci il tuo nome utente: ")
         pass_login = input("Inserisci la tua password: ")
         try:
@@ -25,14 +37,14 @@ def login(self):
                         pass_salvato = righe[i+1].strip()
                         if user_salvato == nome_login and pass_salvato == pass_login:
                             self.nome_loggato = user_salvato
-                            self.pass_loggata = pass_salvato # Salviamo la password nell'oggetto
+                            self.password_loggata = pass_salvato 
                             return True
         except FileNotFoundError:
             print("Errore: Nessun database utenti trovato.")
         return False
 
     # PUNTO 5: Gestione Studenti (Inserimento)
-def inserisci_studente(self):
+    def inserisci_studente(self):
         nome = input('Nome studente: ')
         corso = input('Corso: ')
         with open("studenti.csv", "a") as file:
@@ -40,7 +52,7 @@ def inserisci_studente(self):
         print(f"Studente {nome} aggiunto!")
 
     # PUNTO 6: Lettura e Ordinamento (Mariagrazia)
-def ordina_e_stampa(self):
+    def ordina_e_stampa(self):
         try:
             with open("studenti.csv", "r") as file:
                 righe = file.readlines()
@@ -58,7 +70,7 @@ def ordina_e_stampa(self):
         except FileNotFoundError:
             print("File studenti non trovato.")
 
-#ESECUZIONE DEL PROGRAMMA (Il Main richiama solo la classe)
+# ESECUZIONE DEL PROGRAMMA (Il Main richiama solo la classe)
 
 def main():
     # Creiamo un'unica istanza (oggetto) della classe Utente
@@ -96,6 +108,7 @@ def main():
                 print("Accesso negato.")
 
         elif scelta == "3":
+            print("Arrivederci!")
             break
 
 if __name__ == "__main__":
