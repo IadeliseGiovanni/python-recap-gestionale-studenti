@@ -3,18 +3,6 @@ class Utente:
         self.nome_loggato = None
         self.password_loggata = None
 
-class Admin(Utente):
-    def init(self,nome_loggato):
-        self.nome_loggato=nome_loggato
-        super().init()
-    def reset(self):
-        with open("studenti.txt", "w") as file:
-            file.write("") #sovrascrive con il vuoto
-    def intervento_utente():
-        motivazione=input('inserire motivazione reset')
-        with open("sintervento_utente.txt", "w") as file:
-            file.write(motivazione)
-
     # PUNTO 2 e 3: Registrazione gestita dalla classe
     def registrazione(self):
         nome = input("Scegli un nome utente: ")
@@ -70,6 +58,18 @@ class Admin(Utente):
         except FileNotFoundError:
             print("File studenti non trovato.")
 
+            
+class Admin(Utente):
+    def init(self,nome_loggato):
+        self.nome_loggato=nome_loggato
+        super().init()
+    def reset(self):
+        with open("studenti.txt", "w") as file:
+            file.write("") #sovrascrive con il vuoto
+    def intervento_utente():
+        motivazione=input('inserire motivazione reset')
+        with open("sintervento_utente.txt", "w") as file:
+            file.write(motivazione)
 # ESECUZIONE DEL PROGRAMMA (Il Main richiama solo la classe)
 
 def main():
